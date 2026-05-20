@@ -796,7 +796,7 @@ Respond ONLY with pure JSON (no markdown, no backticks):
 {"message":"conversational explanation","proposal":{"type":"concept","name":"Short name","summary":"2-4 sentence summary","suggestedDomain":"domain name","suggestedField":"field name","suggestedColor":"color if new domain","crossLinks":["node name"],"visualType":"none","svgViz":"","updateTargetId":null,"newName":null}}`;
   aiHistory.push({role:'user',content:text});
   try{
-    const res=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:aiHistory})});
+    const res=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system:sys,messages:aiHistory})});
     const data=await res.json();
     document.getElementById('ai-thinking').classList.remove('show');
     const raw=data.content?.find(b=>b.type==='text')?.text||'{}';
