@@ -309,7 +309,7 @@ body{background:var(--bg);color:var(--text);font-family:'Crimson Pro',serif;heig
 
 <!-- DETAIL PANEL -->
 <div id="detail-panel">
-  <div class="panel-header" style="position:relative">
+  <div class="panel-header" style="position:relative"><button onclick="closeDetailPanel()" style="position:absolute;top:14px;left:18px;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-family:JetBrains Mono,monospace;padding:3px 9px;border-radius:2px;cursor:pointer;">&#x2715;</button>
     <div class="panel-title" id="detail-type">DOMAIN</div>
     <div class="panel-subtitle" id="detail-name">&#8212;</div>
     <button class="detail-edit-btn" onclick="editSelectedNode()">Edit</button>
@@ -527,12 +527,16 @@ function setupCanvas(){
       positionNode(draggingNode);renderLinks();updateMinimap();
     }
   });
-  window.addEventListener('mouseup',()=>{
+  document.getElementById('canvas').addEventListener('touchend',e=>{if(e.target===document.getElementById('canvas')||e.target.id==='links-svg'){closeDetailPanel();}},{passive:true});
+window.addEventListener('mouseup',()=>{
     if(isPanning){isPanning=false;document.getElementById('canvas').style.cursor='';}
     if(draggingNode){if(!didDrag)handleNodeClick(draggingNode);draggingNode=null;scheduleSave();}
     didDrag=false;
   });
-  canvas.addEventListener('wheel',e=>{
+  canvas.addEventListener('touchstart',e=>{if(e.touches.length===1){isPanning=true;panStart={x:e.touches[0].clientX-panX,y:e.touches[0].clientY-panY};}},{passive:true});
+canvas.addEventListener('touchmove',e=>{if(isPanning&&e.touches.length===1){e.preventDefault();panX=e.touches[0].clientX-panStart.x;panY=e.touches[0].clientY-panStart.y;applyTransform();updateMinimap();}},{passive:false});
+canvas.addEventListener('touchend',()=>{isPanning=false;},{passive:true});
+canvas.addEventListener('wheel',e=>{
     e.preventDefault();
     const f=e.deltaY<0?1.1:.91;
     const rect=canvas.getBoundingClientRect();
@@ -603,7 +607,7 @@ function openAddPanel(type,preParentId){
   document.getElementById('parent-group').style.display=SHOW_PARENT[type]?'block':'none';
   document.getElementById('color-group').style.display=SHOW_COLOR[type]?'block':'none';
   setSelectedColor('gold');populateParentSelect(type,preParentId||null);
-  document.getElementById('panel').classList.add('open');
+  document.getElementById('panel').classList.add('open');setTimeout(()=>{const nb=document.getElementById('node-notes');if(nb){nb.scrollIntoView({behavior:'smooth',block:'nearest'});}},400);
   setTimeout(()=>document.getElementById('node-name').focus(),350);
 }
 function openEditPanel(id){
